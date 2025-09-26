@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
 
     // Строим условия для фильтрации
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     
     if (status) {
       where.status = status.toUpperCase();
@@ -62,7 +62,8 @@ export async function GET(request: NextRequest) {
       data: orders || [],
     } as ApiResponse<Order[]>);
 
-  } catch (error) {
+  } catch (err) {
+    console.error('Error in orders GET:', err);
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера',
@@ -141,7 +142,8 @@ export async function POST(request: NextRequest) {
       data: order,
     } as ApiResponse<Order>);
 
-  } catch (error) {
+  } catch (err) {
+    console.error('Error in orders POST:', err);
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера',

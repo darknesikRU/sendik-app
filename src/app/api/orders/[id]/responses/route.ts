@@ -1,36 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { prisma } from '@/lib/prisma';
 import { ApiResponse, Response } from '@/types';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
-    const { data: responses, error } = await supabase
-      .from('responses')
-      .select(`
-        *,
-        deliverer:users!responses_deliverer_id_fkey(telegram_id, username)
-      `)
-      .eq('order_id', id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      return NextResponse.json({
-        success: false,
-        error: 'Ошибка при загрузке откликов',
-      } as ApiResponse<null>, { status: 500 });
-    }
+    const responses = await prisma.response.findMany({
+      where: { order_id: id },
+      include: {
+        deliverer: {
+          select: {
+            telegram_id: true,
+            username: true,
+          },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    });
 
     return NextResponse.json({
       success: true,
       data: responses || [],
     } as ApiResponse<Response[]>);
 
-  } catch (error) {
+  } catch (err) {
+    console.error('Error in responses GET:', err);
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера',
@@ -40,10 +38,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { deliverer_id } = body;
 
@@ -55,13 +53,12 @@ export async function POST(
     }
 
     // Проверяем, существует ли заказ
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .select('id, creator_id')
-      .eq('id', id)
-      .single();
+    const order = await prisma.order.findUnique({
+      where: { id },
+      select: { id: true, creator_id: true },
+    });
 
-    if (orderError || !order) {
+    if (!order) {
       return NextResponse.json({
         success: false,
         error: 'Заказ не найден',
@@ -77,12 +74,14 @@ export async function POST(
     }
 
     // Проверяем, не откликался ли уже пользователь
-    const { data: existingResponse, error: checkError } = await supabase
-      .from('responses')
-      .select('id')
-      .eq('order_id', id)
-      .eq('deliverer_id', deliverer_id)
-      .single();
+    const existingResponse = await prisma.response.findUnique({
+      where: {
+        order_id_deliverer_id: {
+          order_id: id,
+          deliverer_id,
+        },
+      },
+    });
 
     if (existingResponse) {
       return NextResponse.json({
@@ -91,29 +90,29 @@ export async function POST(
       } as ApiResponse<null>, { status: 400 });
     }
 
-    const { data: response, error } = await supabase
-      .from('responses')
-      .insert({
+    const response = await prisma.response.create({
+      data: {
         order_id: id,
         deliverer_id,
-        status: 'pending',
-      })
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json({
-        success: false,
-        error: 'Ошибка при создании отклика',
-      } as ApiResponse<null>, { status: 500 });
-    }
+        status: 'PENDING',
+      },
+      include: {
+        deliverer: {
+          select: {
+            telegram_id: true,
+            username: true,
+          },
+        },
+      },
+    });
 
     return NextResponse.json({
       success: true,
       data: response,
     } as ApiResponse<Response>);
 
-  } catch (error) {
+  } catch (err) {
+    console.error('Error in responses POST:', err);
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера',

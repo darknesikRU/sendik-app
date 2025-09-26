@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Plus, Package, User } from 'lucide-react';
+import { Home, Plus, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Footer() {
@@ -53,3 +53,4 @@ export function Footer() {
     </footer>
   );
 }
+

@@ -25,16 +25,18 @@ export function formatTime(date: string | Date): string {
 }
 
 // Форматирование цены
-export function formatPrice(price: number): string {
+export function formatPrice(price: number | string): string {
+  const numPrice = typeof price === 'string' ? parseFloat(price) : price;
   return new Intl.NumberFormat('ru-RU', {
     style: 'currency',
     currency: 'RUB',
-  }).format(price);
+  }).format(numPrice);
 }
 
 // Форматирование веса
-export function formatWeight(weight: number): string {
-  return `${weight} кг`;
+export function formatWeight(weight: number | string): string {
+  const numWeight = typeof weight === 'string' ? parseFloat(weight) : weight;
+  return `${numWeight} кг`;
 }
 
 // Валидация email (если понадобится)

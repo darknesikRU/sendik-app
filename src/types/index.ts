@@ -13,10 +13,10 @@ export interface Order {
   from_location: string;
   to_location: string;
   description: string;
-  price: number;
+  price: number | string; // Prisma Decimal может быть строкой
   status: OrderStatus;
   delivery_date: string;
-  weight_kg: number;
+  weight_kg: number | string; // Prisma Decimal может быть строкой
   image_urls: string[];
   created_at: string;
 }
@@ -137,3 +137,4 @@ declare global {
     };
   }
 }
+

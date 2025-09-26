@@ -54,3 +54,4 @@ export const getTelegramUserData = () => {
     last_name: user.last_name,
   };
 };
+

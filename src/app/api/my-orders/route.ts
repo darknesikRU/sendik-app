@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { prisma } from '@/lib/prisma';
 import { ApiResponse, Order } from '@/types';
 
 export async function GET(request: NextRequest) {
@@ -15,58 +15,48 @@ export async function GET(request: NextRequest) {
       } as ApiResponse<null>, { status: 400 });
     }
 
-    let query;
+    const where: Record<string, unknown> = {};
 
     if (type === 'created') {
       // Заказы, которые создал пользователь
-      query = supabase
-        .from('orders')
-        .select(`
-          *,
-          creator:users!orders_creator_id_fkey(telegram_id, username),
-          executor:users!orders_executor_id_fkey(telegram_id, username)
-        `)
-        .eq('creator_id', user_id)
-        .order('created_at', { ascending: false });
+      where.creator_id = user_id;
     } else if (type === 'executing') {
       // Заказы, которые выполняет пользователь
-      query = supabase
-        .from('orders')
-        .select(`
-          *,
-          creator:users!orders_creator_id_fkey(telegram_id, username),
-          executor:users!orders_executor_id_fkey(telegram_id, username)
-        `)
-        .eq('executor_id', user_id)
-        .order('created_at', { ascending: false });
+      where.executor_id = user_id;
     } else {
       // Все заказы пользователя
-      query = supabase
-        .from('orders')
-        .select(`
-          *,
-          creator:users!orders_creator_id_fkey(telegram_id, username),
-          executor:users!orders_executor_id_fkey(telegram_id, username)
-        `)
-        .or(`creator_id.eq.${user_id},executor_id.eq.${user_id}`)
-        .order('created_at', { ascending: false });
+      where.OR = [
+        { creator_id: user_id },
+        { executor_id: user_id }
+      ];
     }
 
-    const { data: orders, error } = await query;
-
-    if (error) {
-      return NextResponse.json({
-        success: false,
-        error: 'Ошибка при загрузке заказов',
-      } as ApiResponse<null>, { status: 500 });
-    }
+    const orders = await prisma.order.findMany({
+      where,
+      include: {
+        creator: {
+          select: {
+            telegram_id: true,
+            username: true,
+          },
+        },
+        executor: {
+          select: {
+            telegram_id: true,
+            username: true,
+          },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    });
 
     return NextResponse.json({
       success: true,
       data: orders || [],
     } as ApiResponse<Order[]>);
 
-  } catch (error) {
+  } catch (err) {
+    console.error('Error in my-orders GET:', err);
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера',

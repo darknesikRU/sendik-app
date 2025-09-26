@@ -32,3 +32,4 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
 
   return <>{children}</>;
 }
+

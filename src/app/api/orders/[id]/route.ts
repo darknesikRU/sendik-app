@@ -4,10 +4,10 @@ import { ApiResponse, Order } from '@/types';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const order = await prisma.order.findUnique({
       where: { id },
@@ -39,7 +39,8 @@ export async function GET(
       data: order,
     } as ApiResponse<Order>);
 
-  } catch (error) {
+  } catch (err) {
+    console.error('Error in orders GET by id:', err);
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера',
@@ -49,10 +50,10 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     const order = await prisma.order.update({
@@ -79,7 +80,8 @@ export async function PATCH(
       data: order,
     } as ApiResponse<Order>);
 
-  } catch (error) {
+  } catch (err) {
+    console.error('Error in orders PATCH:', err);
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера',
@@ -89,10 +91,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     await prisma.order.delete({
       where: { id },
@@ -103,7 +105,8 @@ export async function DELETE(
       data: null,
     } as ApiResponse<null>);
 
-  } catch (error) {
+  } catch (err) {
+    console.error('Error in orders DELETE:', err);
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера',
