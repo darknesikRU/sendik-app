@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+}
+
+model User {
+  telegram_id String   @id
+  username    String?
+  created_at  DateTime @default(now())
+
+  // Relations
+  created_orders Order[] @relation("OrderCreator")
+  executed_orders Order[] @relation("OrderExecutor")
+  responses      Response[]
+
+  @@map("users")
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  creator_id    String
+  executor_id   String?
+  from_location String
+  to_location   String
+  description   String
+  price         Decimal  @db.Decimal(10, 2)
+  status        OrderStatus @default(NEW)
+  delivery_date DateTime
+  weight_kg     Decimal  @db.Decimal(5, 2)
+  image_urls    String[] @default([])
+  created_at    DateTime @default(now())
+
+  // Relations
+  creator   User       @relation("OrderCreator", fields: [creator_id], references: [telegram_id], onDelete: Cascade)
+  executor  User?      @relation("OrderExecutor", fields: [executor_id], references: [telegram_id], onDelete: SetNull)
+  responses Response[]
+
+  @@map("orders")
+}
+
+model Response {
+  id           String         @id @default(cuid())
+  order_id     String
+  deliverer_id String
+  status       ResponseStatus @default(PENDING)
+  created_at   DateTime       @default(now())
+
+  // Relations
+  order     Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  deliverer User  @relation(fields: [deliverer_id], references: [telegram_id], onDelete: Cascade)
+
+  @@unique([order_id, deliverer_id])
+  @@map("responses")
+}
+
+enum OrderStatus {
+  NEW
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+
+  @@map("order_status")
+}
+
+enum ResponseStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+
+  @@map("response_status")
+}
