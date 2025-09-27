@@ -37,7 +37,7 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: order,
-    } as ApiResponse<Order>);
+    } as unknown as ApiResponse<Order>);
 
   } catch (err) {
     console.error('Error in orders GET by id:', err);
@@ -78,7 +78,7 @@ export async function PATCH(
     return NextResponse.json({
       success: true,
       data: order,
-    } as ApiResponse<Order>);
+    } as unknown as ApiResponse<Order>);
 
   } catch (err) {
     console.error('Error in orders PATCH:', err);

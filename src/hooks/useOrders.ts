@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Order } from '@/types';
 import { api } from '@/lib/api';
 
@@ -16,7 +16,7 @@ export function useOrders(filters: OrdersFilters = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -44,11 +44,11 @@ export function useOrders(filters: OrdersFilters = {}) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   useEffect(() => {
     fetchOrders();
-  }, [JSON.stringify(filters)]);
+  }, [fetchOrders]);
 
   const createOrder = async (orderData: Omit<Order, 'id' | 'created_at' | 'creator_id'>, creatorId: string) => {
     try {

@@ -41,6 +41,7 @@ export interface ApiResponse<T> {
 
 // Telegram WebApp типы
 export interface TelegramUser {
+  photo_url: string;
   id: number;
   first_name: string;
   last_name?: string;

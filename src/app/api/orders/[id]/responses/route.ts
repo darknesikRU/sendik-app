@@ -25,7 +25,7 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: responses || [],
-    } as ApiResponse<Response[]>);
+    } as unknown as ApiResponse<Response[]>);
 
   } catch (err) {
     console.error('Error in responses GET:', err);
@@ -109,7 +109,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       data: response,
-    } as ApiResponse<Response>);
+    } as unknown as ApiResponse<Response>);
 
   } catch (err) {
     console.error('Error in responses POST:', err);

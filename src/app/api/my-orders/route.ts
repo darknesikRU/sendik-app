@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: orders || [],
-    } as ApiResponse<Order[]>);
+    } as unknown as ApiResponse<Order[]>);
 
   } catch (err) {
     console.error('Error in my-orders GET:', err);

@@ -1,4 +1,4 @@
-import { TelegramWebApp, TelegramUser } from '@/types';
+import { TelegramWebApp} from '@/types';
 
 // Получение экземпляра Telegram WebApp
 export const getTelegramWebApp = (): TelegramWebApp | null => {
@@ -8,24 +8,14 @@ export const getTelegramWebApp = (): TelegramWebApp | null => {
   return null;
 };
 
-// Получение данных пользователя из Telegram
-export const getTelegramUser = (): TelegramUser | null => {
-  const tg = getTelegramWebApp();
-  return tg?.initDataUnsafe?.user || null;
-};
-
-// Валидация initData (базовая проверка)
-export const validateTelegramData = (initData: string): boolean => {
-  // В реальном приложении здесь должна быть проверка подписи
-  // Для MVP пока просто проверяем наличие данных
-  return initData.length > 0;
-};
 
 // Инициализация Telegram WebApp
 export const initTelegramWebApp = () => {
   const tg = getTelegramWebApp();
   if (tg) {
+    // Сообщаем Telegram, что приложение готово
     tg.ready();
+    // Раскрываем веб-приложение на весь экран
     tg.expand();
     
     // Настройка темы
@@ -40,19 +30,34 @@ export const initTelegramWebApp = () => {
 
 // Получение данных пользователя для API
 export const getTelegramUserData = () => {
-  const tg = getTelegramWebApp();
-  const user = getTelegramUser();
-  
-  if (!user || !tg) {
+  try {
+    const tg = getTelegramWebApp();
+    
+    if (!tg) {
+      throw new Error('Telegram WebApp не доступен');
+    }
+
+    const user = tg.initDataUnsafe?.user;
+    if (!user) {
+      throw new Error('Данные пользователя Telegram не найдены');
+    }
+
+    // Возвращаем только необходимые данные
+    return {
+      telegram_id: user.id.toString(),
+      username: user.username || null,
+      first_name: user.first_name,
+      last_name: user.last_name
+    };
+  } catch (error) {
+    console.error('Ошибка получения данных пользователя Telegram:', error);
     return null;
   }
-  
-  return {
-    telegram_id: user.id.toString(),
-    username: user.username || null,
-    first_name: user.first_name,
-    last_name: user.last_name,
-  };
+};
+
+// Валидация initData
+export const validateTelegramData = (initData: string): boolean => {
+  return Boolean(initData && initData.length > 0);
 };
 
 

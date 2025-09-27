@@ -9,17 +9,24 @@ export function useUser() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
+
     const initUser = async () => {
       try {
         setLoading(true);
         setError(null);
 
+        // Ждем некоторое время, чтобы TelegramProvider успел инициализироваться
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         // Получаем данные пользователя из Telegram
         const telegramUserData = getTelegramUserData();
         
         if (!telegramUserData) {
-          setError('Не удалось получить данные пользователя из Telegram');
-          setLoading(false);
+          if (mounted) {
+            setError('Не удалось получить данные пользователя из Telegram');
+            setLoading(false);
+          }
           return;
         }
 
@@ -29,47 +36,35 @@ export function useUser() {
           username: telegramUserData.username,
         });
 
-        if (response.success && response.data) {
-          setUser(response.data);
-        } else {
-          setError(response.error || 'Ошибка синхронизации пользователя');
+        if (mounted) {
+          if (response.success && response.data) {
+            setUser(response.data);
+          } else {
+            setError(response.error || 'Ошибка синхронизации пользователя');
+          }
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
+        if (mounted) {
+          setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     initUser();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
-
-  const updateUser = async (updates: Partial<User>) => {
-    if (!user) return;
-
-    try {
-      const response = await api.patch<User>(`/users/${user.telegram_id}`, updates);
-      
-      if (response.success && response.data) {
-        setUser(response.data);
-        return true;
-      } else {
-        setError(response.error || 'Ошибка обновления пользователя');
-        return false;
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
-      return false;
-    }
-  };
 
   return {
     user,
     loading,
     error,
-    updateUser,
     isAuthenticated: !!user,
   };
 }
-
-

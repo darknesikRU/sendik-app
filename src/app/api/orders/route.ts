@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { ApiResponse, Order } from '@/types';
+import { Prisma, OrderStatus } from '@prisma/client';
+
+type OrderWhereInput = {
+  status?: OrderStatus;
+  from_location?: { contains: string; mode: 'insensitive' };
+  to_location?: { contains: string; mode: 'insensitive' };
+  delivery_date?: {
+    gte?: Date;
+    lte?: Date;
+  };
+  OR?: {
+    [key: string]: { contains: string; mode: 'insensitive' };
+  }[];
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,10 +27,10 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
 
     // Строим условия для фильтрации
-    const where: Record<string, unknown> = {};
+    const where: OrderWhereInput = {};
     
     if (status) {
-      where.status = status.toUpperCase();
+      where.status = status as OrderStatus;
     }
     if (from_location) {
       where.from_location = { contains: from_location, mode: 'insensitive' };
@@ -143,7 +157,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: order,
-    } as ApiResponse<Order>);
+    } as unknown as ApiResponse<Order>);
 
   } catch (err) {
     console.error('Error in orders POST:', err);
