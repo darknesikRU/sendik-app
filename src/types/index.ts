@@ -3,7 +3,7 @@
 export interface User {
   telegram_id: string;
   username: string | null;
-  created_at: string;
+  created_at: Date;
 }
 
 export interface Order {
