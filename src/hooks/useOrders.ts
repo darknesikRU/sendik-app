@@ -29,7 +29,13 @@ export function useOrders(filters: OrdersFilters = {}) {
       const response = await api.get<Order[]>(`/orders?${queryParams.toString()}`);
 
       if (response.success && response.data) {
-        setOrders(response.data);
+        // Проверяем, что data является массивом
+        if (Array.isArray(response.data)) {
+          setOrders(response.data);
+        } else {
+          console.error('API вернул не массив:', response.data);
+          setOrders([]);
+        }
       } else {
         setError(response.error || 'Ошибка загрузки заказов');
       }

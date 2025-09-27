@@ -67,12 +67,12 @@ export default function Home() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">
-                Доступные заказы ({orders.length})
+                Доступные заказы ({Array.isArray(orders) ? orders.length : 0})
               </h2>
             </div>
             
             <div className="grid gap-4">
-              {orders.map((order) => (
+              {Array.isArray(orders) && orders.map((order) => (
                 <OrderCard key={order.id} order={order} />
               ))}
             </div>

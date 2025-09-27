@@ -57,10 +57,13 @@ export async function GET(request: NextRequest) {
       orderBy: { created_at: 'desc' },
     });
 
+    console.log('Orders found:', orders.length);
+    console.log('Orders data:', orders);
+
     return NextResponse.json({
       success: true,
       data: orders || [],
-    } as ApiResponse<Order[]>);
+    });
 
   } catch (err) {
     console.error('Error in orders GET:', err);
