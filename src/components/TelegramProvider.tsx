@@ -62,7 +62,7 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
       clearInterval(telegramInterval);
       clearInterval(textInterval);
     };
-  }, []);
+  }, [isTelegramReady]);
 
   if (!isTelegramReady) {
   return (
@@ -71,16 +71,9 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
         {/* Пульсирующий логотип вместо спиннера */}
         <div className="animate-pulse bg-blue-600 rounded-full h-20 w-20 mx-auto mb-4"></div>
         
-        {/* Спиннер */}
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        
         {/* Текст с плавным переходом */}
         <p className="text-gray-600 animate-pulse">{loadingText}</p>
-        
-        {/* Прогресс-бар */}
-        <div className="w-48 bg-gray-200 rounded-full h-2 mt-4 mx-auto">
-          <div className="bg-blue-600 h-2 rounded-full animate-pulse"></div>
-        </div>
+        ``
       </div>
     </div>
   );

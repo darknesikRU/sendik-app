@@ -17,14 +17,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="ru">
-      <body>
-        <TelegramProvider>  {/* ← Вот здесь */}
-          {children}
+      <body className={`${inter.variable} font-sans antialiased`}>
+        <TelegramProvider>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
         </TelegramProvider>
       </body>
     </html>
