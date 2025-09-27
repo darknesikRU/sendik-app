@@ -95,3 +95,4 @@ npx prisma migrate dev --name migration_name
 ```
 
 **Удачного деплоя! 🚀**
+
