@@ -81,6 +81,16 @@ export async function GET(request: NextRequest) {
 
   } catch (err) {
     console.error('Error in orders GET:', err);
+
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error('Prisma error code:', err.code);
+      console.error('Prisma error message:', err.message);
+    } else if (err instanceof Prisma.PrismaClientValidationError) {
+      console.error('Prisma validation error:', err.message);
+    } else {
+      console.error('Unexpected error:', err);
+    }
+
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера',
@@ -161,6 +171,16 @@ export async function POST(request: NextRequest) {
 
   } catch (err) {
     console.error('Error in orders POST:', err);
+
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error('Prisma error code:', err.code);
+      console.error('Prisma error message:', err.message);
+    } else if (err instanceof Prisma.PrismaClientValidationError) {
+      console.error('Prisma validation error:', err.message);
+    } else {
+      console.error('Unexpected error:', err);
+    }
+
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера',

@@ -14,14 +14,29 @@ export function useTelegramUser() {
       return;
     }
 
-    const initTelegramUser = () => {
+    const checkTelegramWebApp = () => {
+      return new Promise<void>((resolve, reject) => {
+        const maxAttempts = 50;
+        let attempts = 0;
+
+        const intervalId = setInterval(() => {
+          attempts++;
+          if (window.Telegram?.WebApp) {
+            clearInterval(intervalId);
+            resolve();
+          } else if (attempts >= maxAttempts) {
+            clearInterval(intervalId);
+            reject(new Error('Telegram WebApp не загрузился'));
+          }
+        }, 100);
+      });
+    };
+
+    const initTelegramUser = async () => {
       try {
-        const tg = window.Telegram?.WebApp;
+        await checkTelegramWebApp();
 
-        if (!tg) {
-          throw new Error('Telegram WebApp is not available');
-        }
-
+        const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
@@ -41,15 +56,9 @@ export function useTelegramUser() {
       }
     };
 
-    if (window.Telegram?.WebApp) {
-      initTelegramUser();
-    } else {
-      const timer = setTimeout(() => {
-        initTelegramUser();
-      }, 1000);
+    initTelegramUser();
 
-      return () => clearTimeout(timer);
-    }
+    return () => {};
   }, []);
 
   return {

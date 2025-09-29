@@ -1,23 +1,29 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useUser } from '@/hooks/useUser';
+import { api } from '@/lib/api';
 
 export default function DebugPage() {
+  const { user, isAuthenticated } = useUser();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [apiResponse, setApiResponse] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const testAPI = async () => {
+    if (!isAuthenticated) {
+      setError('Пользователь не авторизован');
+      return;
+    }
+
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await fetch('/api/orders');
-      const data = await response.json();
-      
-      console.log('API Response:', data);
-      setApiResponse(data);
+      const response = await api.get('/orders');
+      console.log('API Response:', response);
+      setApiResponse(response);
     } catch (err) {
       console.error('API Error:', err);
       setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
@@ -27,14 +33,27 @@ export default function DebugPage() {
   };
 
   useEffect(() => {
-    testAPI();
-  }, []);
+    if (isAuthenticated) {
+      testAPI();
+    }
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">Debug API</h1>
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <strong>Ошибка:</strong> Пользователь не авторизован
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Debug API</h1>
-      
-      <button 
+
+      <button
         onClick={testAPI}
         disabled={loading}
         className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
