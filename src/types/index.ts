@@ -129,6 +129,8 @@ export interface TelegramWebApp {
       user_id: number;
     };
   }) => void): void;
+  onEvent(eventType: string, eventHandler: () => void): void;
+  offEvent(eventType: string, eventHandler: () => void): void;
 }
 
 declare global {

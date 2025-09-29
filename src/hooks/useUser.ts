@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from '@/types';
-import { getTelegramUserData } from '@/lib/telegram';
+import { getTelegramWebApp, getTelegramUserData } from '@/lib/telegram';
 import { api } from '@/lib/api';
 
 export function useUser() {
@@ -10,18 +10,38 @@ export function useUser() {
 
   useEffect(() => {
     let mounted = true;
+    let intervalId: NodeJS.Timeout | null = null;
 
     const initUser = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Ждем некоторое время, чтобы TelegramProvider успел инициализироваться
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Ожидаем инициализации Telegram.WebApp
+        const waitForTelegram = () => {
+          return new Promise<void>((resolve, reject) => {
+            const maxAttempts = 50; // Максимум 5 секунд ожидания (100мс * 50)
+            let attempts = 0;
+
+            intervalId = setInterval(() => {
+              attempts++;
+              const tg = getTelegramWebApp();
+              if (tg) {
+                if (intervalId) clearInterval(intervalId);
+                resolve();
+              } else if (attempts >= maxAttempts) {
+                if (intervalId) clearInterval(intervalId);
+                reject(new Error('Telegram.WebApp не инициализирован'));
+              }
+            }, 100);
+          });
+        };
+
+        await waitForTelegram();
 
         // Получаем данные пользователя из Telegram
         const telegramUserData = getTelegramUserData();
-        
+
         if (!telegramUserData) {
           if (mounted) {
             setError('Не удалось получить данные пользователя из Telegram');
@@ -58,6 +78,7 @@ export function useUser() {
 
     return () => {
       mounted = false;
+      if (intervalId) clearInterval(intervalId);
     };
   }, []);
 
