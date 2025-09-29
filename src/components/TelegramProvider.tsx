@@ -1,7 +1,6 @@
 'use client';
 
 import { useTelegramUser } from '@/hooks/useTelegramUser';
-import Script from 'next/script';
 
 interface TelegramProviderProps {
   children: React.ReactNode;
@@ -23,14 +22,20 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
 
   if (error) {
     console.error('Telegram initialization error:', error);
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <div className="bg-red-100 rounded-full h-20 w-20 mx-auto mb-4 flex items-center justify-center">
+            <span className="text-red-600">⚠️</span>
+          </div>
+          <p className="text-red-600">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <>
-      <Script
-        src="https://telegram.org/js/telegram-web-app.js"
-        strategy="afterInteractive"
-      />
       {children}
     </>
   );
