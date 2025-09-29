@@ -7,7 +7,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { telegram_id, username } = body;
 
+    console.log('Sync user request body:', body);
+
     if (!telegram_id) {
+      console.error('telegram_id is required');
       return NextResponse.json({
         success: false,
         error: 'telegram_id обязателен',
@@ -23,6 +26,8 @@ export async function POST(request: NextRequest) {
         username,
       },
     });
+
+    console.log('User synced successfully:', user);
 
     return NextResponse.json({
       success: true,
