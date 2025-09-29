@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: user,
-    } as ApiResponse<User>);
+    } as unknown as ApiResponse<User>);
 
   } catch (error) {
     console.error('Error in users/sync:', error);

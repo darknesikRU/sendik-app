@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 
 export default function DebugPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [apiResponse, setApiResponse] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -94,7 +94,7 @@ export default function CreateOrderPage() {
         weight_kg: weight,
         image_urls: images,
         status: 'new',
-      }, user.telegram_id);
+      }, user.telegramId);
 
       if (result.success) {
         router.push('/');

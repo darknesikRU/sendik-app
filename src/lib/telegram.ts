@@ -1,4 +1,6 @@
-import { TelegramWebApp } from '@/types';
+
+// Используем тип из global.d.ts
+type TelegramWebApp = typeof window.Telegram.WebApp;
 
 // Получение экземпляра Telegram WebApp
 export const getTelegramWebApp = (): TelegramWebApp | null => {
@@ -12,42 +14,34 @@ export const getTelegramWebApp = (): TelegramWebApp | null => {
 // Инициализация Telegram WebApp
 export const initTelegramWebApp = () => {
   const tg = getTelegramWebApp();
-  if (!tg) {
-    console.warn('Telegram.WebApp не доступен. Возможно, приложение не запущено в Telegram.');
-    return null;
+  if (tg) {
+    // Сообщаем Telegram, что приложение готово
+    tg.ready();
+    // Раскрываем веб-приложение на весь экран
+    tg.expand();
+    
+    // Настройка темы
+    if (tg.colorScheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+    
+    return tg;
   }
-
-  // Сообщаем Telegram, что приложение готово
-  tg.ready();
-  // Раскрываем веб-приложение на весь экран
-  tg.expand();
-
-  // Настройка темы
-  if (tg.colorScheme === 'dark') {
-    document.documentElement.classList.add('telegram-dark');
-  }
-
-  // Обработка изменения темы
-  tg.onEvent('themeChanged', () => {
-    document.documentElement.classList.toggle('telegram-dark', tg.colorScheme === 'dark');
-  });
-
-  return tg;
+  return null;
 };
 
 // Получение данных пользователя для API
 export const getTelegramUserData = () => {
   try {
     const tg = getTelegramWebApp();
+    
     if (!tg) {
-      console.warn('Telegram.WebApp не доступен');
-      return null;
+      throw new Error('Telegram WebApp не доступен');
     }
 
     const user = tg.initDataUnsafe?.user;
     if (!user) {
-      console.warn('Данные пользователя Telegram не найдены');
-      return null;
+      throw new Error('Данные пользователя Telegram не найдены');
     }
 
     // Возвращаем только необходимые данные
@@ -55,7 +49,7 @@ export const getTelegramUserData = () => {
       telegram_id: user.id.toString(),
       username: user.username || null,
       first_name: user.first_name,
-      last_name: user.last_name || undefined,
+      last_name: user.last_name
     };
   } catch (error) {
     console.error('Ошибка получения данных пользователя Telegram:', error);

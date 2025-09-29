@@ -1,0 +1,105 @@
+Idea
+Sendik is a TON blockchain-based Telegram WebApp for p2p delivery of small parcels.
+It connects senders with fellow travelers willing to carry packages during their trips.
+
+Target audience
+
+Frequent flyers (domestic & international): entrepreneurs, assistants, travelers.
+
+Senders needing fast, cheap delivery.
+
+Travelers who want to earn extra money by carrying items.
+
+Core principles
+
+Peer-to-peer: Sendik only connects people, no logistics.
+
+Escrow via TON smart contract (Stars → locked until delivery confirmed).
+
+Minimal barriers: Telegram login, familiar payment method.
+
+User-friendly interface: simple screens, quick access to orders/status.
+
+User roles
+
+Sender
+
+Creates an order (description, photo, route, date, weight).
+
+Deposits payment into escrow.
+
+Hands package to deliverer.
+
+Confirms delivery → releases payment.
+
+Deliverer
+
+Browses available orders (filters by route/date).
+
+Responds and accepts delivery.
+
+Meets sender (e.g., airport handover).
+
+Confirms receipt → gets paid after delivery.
+
+(Users can be both senders and deliverers, depending on the order.)
+
+Main screens
+
+Order feed – active orders with filters.
+
+Create order – form + photo upload + route selection + Stars payment.
+
+My orders – tabs: Sending / Delivering, with statuses and actions (cancel/confirm/finish).
+
+Profile – user’s basic data.
+
+Monetization
+
+Commission from sender–deliverer transaction.
+
+Payments via Telegram Stars.
+
+Tech stack (MVP)
+
+Frontend: React (Next.js), Tailwind CSS, shadcn/ui
+
+State mgmt: React hooks + React Query
+
+Backend: Supabase (Auth, DB, Storage, Edge Functions)
+
+ORM: Prisma
+
+Blockchain/payments: ton.js SDK (Stars → escrow)
+
+Hosting: Vercel + Supabase
+
+MVP features (mandatory)
+
+Telegram login
+
+Create/view orders
+
+Respond to orders
+
+"My Orders" (2 tabs)
+
+Escrow (Stars smart contract)
+
+Confirm sending & delivery
+
+ToS disclaimer
+
+Status notifications (via Telegram)
+
+Future development
+
+Order history
+
+User ratings/reviews
+
+More payment options (TON, fiat)
+
+Advanced search/filters
+
+👉 In short: Sendik is a simple, trustworthy tool for sending parcels across borders or domestically via travelers, with low entry barriers and built-in escrow safety.

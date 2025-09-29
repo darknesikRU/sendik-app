@@ -137,7 +137,7 @@ export default function OrderPage() {
     );
   }
 
-  const isCreator = user?.telegram_id === order.creator_id;
+  const isCreator = user?.telegramId === order.creator_id;
   const canRespond = !isCreator && order.status === 'new' && user;
 
   return (

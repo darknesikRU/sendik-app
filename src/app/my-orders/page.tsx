@@ -21,7 +21,7 @@ export default function MyOrdersPage() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`/api/my-orders?user_id=${user.telegram_id}&type=${activeTab}`);
+        const response = await fetch(`/api/my-orders?user_id=${user.telegramId}&type=${activeTab}`);
         const data = await response.json();
 
         if (data.success) {

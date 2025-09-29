@@ -87,6 +87,7 @@ export function OrderCard({ order, showActions = true }: OrderCardProps) {
         {order.image_urls && order.image_urls.length > 0 && (
           <div className="flex space-x-2 mb-3">
             {order.image_urls.slice(0, 3).map((url, index) => (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 key={index}
                 src={url}

@@ -1,0 +1,139 @@
+Screen: “All Orders” (feed)
+Purpose: show available orders for user selection/response.
+
+Creator does not see their own orders.
+
+Only others’ available orders are displayed.
+
+If user already responded → badge “Responded”.
+
+If chosen as executor → order hidden from feed.
+
+Order card
+
+From → To (short)
+
+Price
+
+Deadline (date/time)
+
+Short description
+
+“Responded” badge (if applicable)
+
+Filters
+
+Price range
+
+Distance (geolocation)
+
+Date/deadline (today / tomorrow / later)
+
+Action
+
+Tap card → modal window (order details).
+
+Modal window (order details)
+
+From (city)
+
+To (city)
+
+Price
+
+Deadline (date+time)
+
+Description
+
+Photos (if any)
+
+Actions:
+
+“Respond” button
+
+If already responded → text “You responded”, button inactive
+
+Close by swipe-down or X
+
+Screen: “Create Order”
+Purpose: create delivery order for others to see in feed.
+
+Form fields
+
+From (address/location) – required
+
+To (address/location) – required
+
+Price (in TON) – required
+
+Deadline (date+time) – required
+
+Description – required
+
+Photo(s) – optional
+
+Logic
+
+All required fields must be filled for “Create Order” button to activate.
+
+After creation → appears in “My Orders” with status=Created.
+
+Creator does not see their order in feed.
+
+UI details
+
+Main CTA: “Create Order” (blue)
+
+Price input format: numeric TON (e.g., 15 TON)
+
+Photos via standard picker (camera/gallery)
+
+Screen: “My Orders”
+Top switch (segmented control):
+
+Sending
+
+Delivering
+
+Delivering mode (as deliverer)
+
+Confirmed orders (I am executor) → first
+
+Card: status “In progress”, button “Finish order”
+
+Responses (I responded, not yet chosen) → second
+
+Card: status “Awaiting confirmation”
+
+Sending mode (as creator)
+
+With confirmed executor → first
+
+Card: status “In progress”, button to contact/chat
+
+With responses → second
+
+Card: list of responses, button “Choose executor”
+
+General logic
+
+All cards clickable → order detail popup with full data + actions (choose executor / finish order / status).
+
+Screen: “Profile”
+Elements:
+
+Avatar (center top; initials if missing)
+
+Username (if none, show firstname+lastname)
+
+TonConnect button
+
+Not connected → “Connect wallet”
+
+Connected → show part of wallet address (e.g. EQBv...DskA), button “Disconnect”
+
+“Settings & Info” section:
+
+ToS (link)
+
+(Optional: Privacy Policy)
