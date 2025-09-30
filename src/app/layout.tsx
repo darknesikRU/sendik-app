@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { TelegramProvider } from "@/components/TelegramProvider";
+import Script from 'next/script';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,6 +24,10 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <Script
+          src="https://telegram.org/js/telegram-web-app.js"
+          strategy="beforeInteractive"
+        />
         <TelegramProvider>
           <div className="min-h-screen flex flex-col">
             <Header />

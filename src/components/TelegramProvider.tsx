@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useTelegramUser } from '@/hooks/useTelegramUser';
 
 interface TelegramProviderProps {
@@ -8,6 +9,17 @@ interface TelegramProviderProps {
 
 export function TelegramProvider({ children }: TelegramProviderProps) {
   const { isLoading, error } = useTelegramUser();
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.Telegram?.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.expand();
+      console.log("WebApp initialized:", {
+        user: tg.initDataUnsafe?.user,
+        platform: tg.platform,
+      });
+    }
+  }, []);
 
   if (isLoading) {
     return (
@@ -34,9 +46,5 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
     );
   }
 
-  return (
-    <>
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }
